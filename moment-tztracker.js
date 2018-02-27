@@ -49,12 +49,6 @@
 	    });
 	}
 
-	function logError (message) {
-		if (typeof console !== 'undefined' && typeof console.error === 'function') {
-			console.error(message);
-		}
-	}
-
 	function tzTrack( element, options ) {
 		if (typeof window.moment === "undefined") {
 			self.console.error('moment.js is required for this plugin. Please install from https://momentjs.com/');
@@ -139,7 +133,6 @@
 		auto: function () {
 			if (self.options.autoupdate) {
 				var formattedString = self.parse.getFormattedString();
-				console.log(formattedString);
 				$(self.element).html(formattedString);
 				setTimeout(function() {
 					self.update.auto();
