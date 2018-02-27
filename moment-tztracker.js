@@ -56,6 +56,10 @@
 	}
 
 	function tzTrack( element, options ) {
+		if (typeof window.moment === "undefined") {
+			self.console.error('moment.js is required for this plugin. Please install from https://momentjs.com/');
+			return false;
+		}
 		this.element = element;
 
 		this.options = $.extend( {}, defaults, options);
@@ -74,6 +78,7 @@
 		self = this;
 
 		self.init();
+		return this;
 	};
 
 	tzTrack.prototype.setup = {
@@ -150,15 +155,71 @@
 	tzTrack.prototype.init = function () {
 		self.setup.parse();
 		self.update.auto();
-	}
+	};
+
+	tzTrack.prototype.console = {
+		log: function (message) {
+			if(typeof console!="undefined"&&console.log)
+				console.log.apply(console,arguments);
+		},
+		warn: function (message) {
+			if(typeof console!="undefined"&&console.warn)
+				console.warn.apply(console,arguments);
+		},
+		error: function (msg,data) {
+			var e=new Error(msg);
+			e.data=data;
+			if(typeof console=="object"&&console.error)
+				console.error(e);
+			setTimeout(function(){
+				throw e;
+			});
+		}
+	};
+
+    tzTrack.prototype.processOptions = function (optionsMethod, arg1, arg2) {
+		// self.console.log("typeof optionsmethod ["+optionsMethod+"]:"+typeof(optionsmethod));
+		// For some reason when sending a string it comes back as typeof undefined o.O?
+		if (typeof optionsmethod == "string" || typeof optionsmethod == "undefined") {
+			switch(optionsMethod) {
+				case "update":
+					switch(arg1) {
+						case "set":
+							self.update.set(arg2);
+							return true;
+							break;
+						case "auto":
+							self.update.auto();
+							return true;
+							break;
+					}
+					return false;
+					break;
+				case "getstring":
+					return self.update.getFormattedString();
+					break;
+				default:
+					self.console.warn("Unknown command: "+optionsmethod);
+					return false;
+					break;
+			}
+		} else {
+			// process new option changes
+
+		}
+    };
 
 	$.fn[pluginName] = function ( optionsMethod, arg1, arg2 ) {
-		if (typeof window.moment === "undefined") {
-			logError('moment.js is required for this plugin. Please install from https://momentjs.com/');
-		}
 		return this.each(function () {
 			if (!$.data(this, 'plugin_' + pluginName)) {
-				$.data(this, 'plugin_' + pluginName, new tzTrack( this, optionsMethod ));
+				var ltzTrack = new tzTrack( this, optionsMethod );
+				if (ltzTrack) {
+					$.data(this, 'plugin_' + pluginName, ltzTrack);
+				}
+				return ltzTrack;
+            } else {
+				var tzTracker = $.data(this, 'plugin_' + pluginName);
+				return tzTracker.processOptions(optionsMethod, arg1, arg2);
 			}
 		});
 	}
