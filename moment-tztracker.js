@@ -1,7 +1,9 @@
-//! moment-tztracker.js
-//! version : 1.0.0
-//! Copyright (c) Catalyzed Motivation Inc
-//! license : GUN GPLv3
+/***********************************************
+	moment-tztracker.js
+	version : 1.0.1
+	Copyright (c) Catalyzed Motivation Inc
+	license : GUN GPLv3
+***********************************************/
 
 ;(function ( $, window, document, undefined ) {
 
@@ -112,12 +114,13 @@
 		getFormattedString: function () {
 			var m = moment.tz(self.data.userTZ);
 			m.tz(self.options.tz);
-			var dayOfWeek = m.format("e");
+			var dayOfWeek = parseInt(m.format("e"),10);
 			if (self.options.days.indexOf(dayOfWeek) !== -1) {
 				var currentHourMin = m.format(moment.HTML5_FMT.TIME);
 				currentHourMin = self.parse.timeToMins(currentHourMin);
 				var start = self.parse.timeToMins(self.options.hours.start);
 				var end = self.parse.timeToMins(self.options.hours.end);
+
 				if (currentHourMin > start) {
 					if (currentHourMin < end) {
 						self.data.parsed.class = "OPEN";
@@ -211,8 +214,19 @@
 				}
 				return ltzTrack;
             } else {
-				var tzTracker = $.data(this, 'plugin_' + pluginName);
-				return tzTracker.processOptions(optionsMethod, arg1, arg2);
+				if (typeof optionsMethod != "string") {
+					var tzTracker = $.data(this, 'plugin_' + pluginName);
+					tzTracker.processOptions('update', 'set', false);
+
+					var ltzTrack = new tzTrack( this, optionsMethod );
+					if (ltzTrack) {
+						$.data(this, 'plugin_' + pluginName, ltzTrack);
+					}
+					return ltzTrack;
+				} else {
+					var tzTracker = $.data(this, 'plugin_' + pluginName);
+					return tzTracker.processOptions(optionsMethod, arg1, arg2);
+				}
 			}
 		});
 	}
