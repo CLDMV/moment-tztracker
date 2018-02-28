@@ -109,7 +109,9 @@
 				hour:	h,
 				minute:	m
 			};
-			return moment(dObject).tz(tz);
+			m = moment.tz(dObject,self.options.tz);
+			m = m.tz(tz);
+			return m;
 		},
 		getFormattedString: function () {
 			var m = moment.tz(self.data.userTZ);
