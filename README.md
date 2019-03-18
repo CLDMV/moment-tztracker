@@ -73,3 +73,8 @@ Days of week business is open. Valid values start at 0 (Sunday). A full week exa
 ### hours
 ###### default: { start: "07:00", end: "15:00" }
 Both are 24 hour format. Standard HOUR:MIN format. Should be with leading zeros.
+
+## ❤️ Contributors
+
+This project exists thanks to all the people who contribute. [[Contributors](https://github.com/CLDMV/sizeofvar/graphs/contributors)].
+<a href="https://github.com/CLDMV/sizeofvar/graphs/contributors"><img src="https://image.cldmv.net/github/contributors/?repo=sizeofvar" /></a>
